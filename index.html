@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>投資ラボ | 資産報告フォーム</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main class="entry-page">
+      <header class="entry-header">
+        <p class="entry-eyebrow">投資ラボ 株式模擬トレード</p>
+        <h1>今日の資産を報告しよう</h1>
+        <p class="entry-sub">ハンドルネームとPINは初回登録時のものを毎回使ってね。</p>
+      </header>
+
+      <form id="entry-form" class="entry-form" autocomplete="off">
+        <label class="field">
+          <span>ハンドルネーム</span>
+          <input type="text" id="handleName" name="handleName" maxlength="20" required placeholder="例: たかし" />
+        </label>
+
+        <label class="field">
+          <span>PIN(4桁の数字)</span>
+          <input
+            type="password"
+            id="pin"
+            name="pin"
+            inputmode="numeric"
+            pattern="\d{4}"
+            maxlength="4"
+            required
+            placeholder="例: 1234"
+          />
+          <small>初めての登録時に決めたPINを入力してください。</small>
+        </label>
+
+        <label class="field">
+          <span>総資産(円)</span>
+          <input type="number" id="totalAssets" name="totalAssets" required placeholder="例: 1050000" />
+        </label>
+
+        <label class="field">
+          <span>含み益・含み損(円・任意)</span>
+          <input
+            type="number"
+            id="unrealizedPl"
+            name="unrealizedPl"
+            placeholder="例: 50000 / -20000"
+          />
+          <small>含み益はプラス、含み損はマイナスで入力してください。無ければ空欄でOK。</small>
+        </label>
+
+        <button type="submit" id="submit-btn">報告する</button>
+      </form>
+
+      <div id="result" class="result" hidden></div>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

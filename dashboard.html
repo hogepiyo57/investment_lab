@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>投資ラボ | ランキングダッシュボード</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <section id="login-view" class="login-view">
+      <div class="login-card">
+        <p class="entry-eyebrow">投資ラボ</p>
+        <h1>ダッシュボード</h1>
+        <p class="entry-sub">閲覧パスワードを入力してください。</p>
+        <form id="login-form" class="login-form">
+          <input type="password" id="dashboard-password" placeholder="パスワード" required />
+          <button type="submit">開く</button>
+        </form>
+        <p id="login-error" class="error-text" hidden></p>
+      </div>
+    </section>
+
+    <main id="dashboard-view" class="dashboard-view" hidden>
+      <header class="dashboard-header">
+        <p class="entry-eyebrow">投資ラボ 株式模擬トレード</p>
+        <h1>資産ランキング</h1>
+        <button id="refresh-btn" class="refresh-btn" type="button">更新</button>
+      </header>
+
+      <section id="podium" class="podium"></section>
+
+      <section class="ranking-list-wrap">
+        <table class="ranking-table">
+          <thead>
+            <tr>
+              <th>順位</th>
+              <th>ハンドルネーム</th>
+              <th>総資産</th>
+              <th>含み損益</th>
+            </tr>
+          </thead>
+          <tbody id="ranking-tbody"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <div id="history-modal" class="modal" hidden>
+      <div class="modal-content">
+        <button id="modal-close" class="modal-close" type="button" aria-label="閉じる">&times;</button>
+        <h2 id="modal-title"></h2>
+        <canvas id="history-chart" height="280"></canvas>
+      </div>
+    </div>
+
+    <script type="module" src="/src/dashboard.ts"></script>
+  </body>
+</html>

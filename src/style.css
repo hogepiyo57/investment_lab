@@ -1,0 +1,452 @@
+:root {
+  color-scheme: dark;
+  --bg: #0b1020;
+  --bg-elevated: #131a30;
+  --card: #1a2340;
+  --card-border: #2a3760;
+  --text: #eef1fb;
+  --text-dim: #9aa4c7;
+  --accent: #5b8dff;
+  --accent-2: #7c5bff;
+  --green: #35d68f;
+  --red: #ff5c7a;
+  --gold: #ffd166;
+  --silver: #d8dde8;
+  --bronze: #e0a06a;
+  --radius: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(circle at top, #171f3d 0%, var(--bg) 55%);
+  color: var(--text);
+  font-family: "Hiragino Sans", "Yu Gothic UI", "Segoe UI", system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+/* ---------- 入力フォーム ---------- */
+.entry-page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 32px 20px 60px;
+}
+
+.entry-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.entry-header h1 {
+  font-size: 26px;
+  margin: 0 0 8px;
+}
+
+.entry-sub {
+  color: var(--text-dim);
+  font-size: 14px;
+  margin: 0 0 28px;
+}
+
+.entry-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.field input {
+  font-size: 16px;
+  font-weight: 400;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: var(--bg-elevated);
+  color: var(--text);
+}
+
+.field input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.field small {
+  color: var(--text-dim);
+  font-weight: 400;
+  font-size: 12px;
+}
+
+#submit-btn {
+  margin-top: 6px;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+#submit-btn:active {
+  transform: scale(0.98);
+}
+
+#submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.result {
+  margin-top: 20px;
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.result.success {
+  background: rgba(53, 214, 143, 0.12);
+  border: 1px solid rgba(53, 214, 143, 0.4);
+  color: var(--green);
+}
+
+.result.error {
+  background: rgba(255, 92, 122, 0.12);
+  border: 1px solid rgba(255, 92, 122, 0.4);
+  color: var(--red);
+}
+
+/* ---------- ダッシュボード ログイン ---------- */
+.login-view {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 360px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.login-form input {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-size: 16px;
+  text-align: center;
+}
+
+.login-form button {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.error-text {
+  color: var(--red);
+  font-size: 13px;
+  margin-top: 14px;
+}
+
+/* ---------- ダッシュボード本体 ---------- */
+.dashboard-view {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.dashboard-header h1 {
+  font-size: 30px;
+  margin: 0;
+  flex: 1;
+}
+
+.refresh-btn {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background: var(--card);
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.refresh-btn:hover {
+  border-color: var(--accent);
+}
+
+/* ---------- 表彰台 ---------- */
+.podium {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 36px;
+}
+
+.podium-card {
+  position: relative;
+  border-radius: var(--radius);
+  padding: 22px 16px 20px;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid var(--card-border);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.podium-card:hover {
+  transform: translateY(-4px);
+}
+
+.podium-card.rank-1 {
+  order: 2;
+  background: linear-gradient(160deg, rgba(255, 209, 102, 0.28), var(--card) 70%);
+  border-color: rgba(255, 209, 102, 0.6);
+  transform: scale(1.06);
+  box-shadow: 0 0 32px rgba(255, 209, 102, 0.25);
+}
+
+.podium-card.rank-2 {
+  order: 1;
+  background: linear-gradient(160deg, rgba(216, 221, 232, 0.22), var(--card) 70%);
+  border-color: rgba(216, 221, 232, 0.5);
+}
+
+.podium-card.rank-3 {
+  order: 3;
+  background: linear-gradient(160deg, rgba(224, 160, 106, 0.22), var(--card) 70%);
+  border-color: rgba(224, 160, 106, 0.5);
+}
+
+.podium-medal {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 6px;
+  animation: float 2.4s ease-in-out infinite;
+}
+
+.podium-card.rank-1 .podium-medal {
+  font-size: 52px;
+  animation-duration: 2s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.podium-name {
+  font-size: 17px;
+  font-weight: 800;
+  margin: 4px 0 8px;
+  word-break: break-word;
+}
+
+.podium-assets {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+.podium-pl {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pl-positive {
+  color: var(--green);
+}
+
+.pl-negative {
+  color: var(--red);
+}
+
+.pl-zero {
+  color: var(--text-dim);
+}
+
+/* ---------- ランキングテーブル ---------- */
+.ranking-list-wrap {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ranking-table th {
+  text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.ranking-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(42, 55, 96, 0.5);
+  font-size: 15px;
+}
+
+.ranking-table tbody tr {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.ranking-table tbody tr:hover {
+  background: rgba(91, 141, 255, 0.08);
+}
+
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* ---------- 履歴モーダル ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 20, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 50;
+}
+
+.modal-content {
+  background: var(--bg-elevated);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 28px 24px 20px;
+  max-width: 640px;
+  width: 100%;
+  position: relative;
+}
+
+.modal-content h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: var(--text);
+}
+
+/* ---------- 紙吹雪 ---------- */
+.confetti-piece {
+  position: fixed;
+  top: -10px;
+  width: 8px;
+  height: 14px;
+  opacity: 0.9;
+  pointer-events: none;
+  z-index: 100;
+  animation: confetti-fall linear forwards;
+}
+
+@keyframes confetti-fall {
+  to {
+    transform: translateY(105vh) rotate(540deg);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .podium {
+    grid-template-columns: 1fr;
+  }
+  .podium-card.rank-1,
+  .podium-card.rank-2,
+  .podium-card.rank-3 {
+    order: initial;
+    transform: none;
+  }
+  .ranking-table th:nth-child(4),
+  .ranking-table td:nth-child(4) {
+    display: none;
+  }
+}

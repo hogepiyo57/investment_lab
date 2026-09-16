@@ -1,0 +1,23 @@
+{
+  "name": "investment-lab",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "pages:dev": "wrangler pages dev",
+    "db:migrate:local": "wrangler d1 migrations apply investment_lab_db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply investment_lab_db --remote"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.2",
+    "vite": "^5.4.8",
+    "wrangler": "^3.78.0",
+    "@cloudflare/workers-types": "^4.20240925.0"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.4"
+  }
+}
