@@ -361,6 +361,16 @@ body {
   background: rgba(91, 141, 255, 0.08);
 }
 
+.ranking-table tbody tr.is-me {
+  background: rgba(91, 141, 255, 0.16);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.podium-card.is-me {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .rank-badge {
   display: inline-flex;
   align-items: center;

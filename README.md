@@ -2,8 +2,8 @@
 
 株式模擬トレード授業向けの資産報告・ランキングダッシュボードです。
 
-- 生徒は `/`(入力フォーム)からハンドルネーム・PIN・総資産・含み益損を報告します。
-- 教員/生徒は `/dashboard`(共通パスワード保護)からランキングと資産推移グラフを閲覧できます。
+- 生徒は `/`(入力フォーム)からハンドルネーム・PIN・総資産・含み益損を報告します。送信すると自動的にダッシュボードへ移動します。
+- 誰でも `/dashboard.html` からランキングと資産推移グラフを閲覧できます(パスワード不要)。
 - Cloudflare Pages + Pages Functions + D1 で構築し、GitHub リポジトリと連携して push すると自動デプロイされます。
 
 ## セットアップ手順
@@ -38,35 +38,24 @@ npm run db:migrate:local
 npm run db:migrate:remote
 ```
 
-### 5. ダッシュボード用パスワードの設定
-
-ローカル確認用に `.dev.vars` ファイルを作成(Gitには含めないでください):
-
-```
-DASHBOARD_PASSWORD=好きな共通パスワード
-```
-
-本番環境では Cloudflare Pages の管理画面(Settings → Environment variables)で `DASHBOARD_PASSWORD` を **Secret** として設定してください。
-
-### 6. ローカルで動作確認
+### 5. ローカルで動作確認
 
 ```bash
 npm run build
 npm run pages:dev
 ```
 
-表示されたURLで `/`(入力フォーム)と `/dashboard`(ランキング)を確認してください。
+表示されたURLで `/`(入力フォーム)と `/dashboard.html`(ランキング)を確認してください。
 
-### 7. GitHub 連携 & Cloudflare Pages への接続
+### 6. GitHub 連携 & Cloudflare Pages への接続
 
 1. このリポジトリを GitHub にプッシュします(`git push -u origin main`)。
 2. Cloudflare ダッシュボード → Workers & Pages → Pages → "Connect to Git" から `investment_lab` リポジトリを選択。
 3. ビルド設定:
    - Build command: `npm run build`
    - Build output directory: `dist`
-4. Settings → Functions → D1 database bindings で `DB` を作成済みの `investment_lab_db` にバインド。
-5. Settings → Environment variables で `DASHBOARD_PASSWORD` を Secret として登録。
-6. 以降は `main` ブランチに push するたびに自動でビルド・デプロイされます。
+4. D1バインディング(`DB`)は `wrangler.toml` に記載済みのため、Gitと連携すれば自動的に反映されます。
+5. 以降は `main` ブランチに push するたびに自動でビルド・デプロイされます。
 
 ## データモデル
 
@@ -76,5 +65,5 @@ npm run pages:dev
 ## セキュリティに関する補足
 
 - PINは平文で保存せず、SHA-256でハッシュ化して保存しています。
-- ダッシュボードの共通パスワードは環境変数として管理し、認証成功時のみ署名付きHttpOnly Cookieを発行します。
+- ランキングダッシュボードは誰でも閲覧できる公開ページです(パスワード保護なし)。
 - 生徒間のなりすまし防止のためのPIN認証であり、厳格な本人確認ではない点にご留意ください(教室内利用を想定した簡易的な仕組みです)。

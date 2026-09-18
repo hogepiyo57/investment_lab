@@ -63,6 +63,7 @@ form.addEventListener("submit", async (event) => {
 
     if (!response.ok || !data.ok) {
       showResult(data.error ?? "エラーが発生しました。", "error");
+      submitBtn.disabled = false;
       return;
     }
 
@@ -70,10 +71,13 @@ form.addEventListener("submit", async (event) => {
 
     const rankText = data.rank ? `現在の順位: ${data.rank}位 / ${data.totalStudents}人中` : "";
     const welcomeText = data.isNewStudent ? "登録が完了しました!このPINを次回以降も使ってね。" : "更新しました!";
-    showResult(`${welcomeText}\n${rankText}`, "success");
+    showResult(`${welcomeText}\n${rankText}\nダッシュボードに移動します...`, "success");
+
+    setTimeout(() => {
+      location.href = `/dashboard.html?me=${encodeURIComponent(handleName)}`;
+    }, 1200);
   } catch {
     showResult("通信エラーが発生しました。もう一度お試しください。", "error");
-  } finally {
     submitBtn.disabled = false;
   }
 });

@@ -18,11 +18,6 @@ interface HistoryRow {
   created_at: string;
 }
 
-const loginView = document.getElementById("login-view") as HTMLElement;
-const dashboardView = document.getElementById("dashboard-view") as HTMLElement;
-const loginForm = document.getElementById("login-form") as HTMLFormElement;
-const passwordInput = document.getElementById("dashboard-password") as HTMLInputElement;
-const loginError = document.getElementById("login-error") as HTMLElement;
 const refreshBtn = document.getElementById("refresh-btn") as HTMLButtonElement;
 const podiumEl = document.getElementById("podium") as HTMLElement;
 const tbody = document.getElementById("ranking-tbody") as HTMLTableSectionElement;
@@ -33,7 +28,7 @@ const chartCanvas = document.getElementById("history-chart") as HTMLCanvasElemen
 
 let chartInstance: Chart | null = null;
 let lastTopHandle: string | null = null;
-let refreshTimer: number | null = null;
+let hasScrolledToMe = false;
 
 const yen = new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY", maximumFractionDigits: 0 });
 
@@ -48,53 +43,12 @@ function formatPl(value: number | null): string {
   return `${sign}${yen.format(value)}`;
 }
 
-async function checkSession(): Promise<boolean> {
-  const res = await fetch("/api/dashboard-session");
-  const data = await res.json();
-  return Boolean(data.ok);
-}
-
-async function showDashboard(): Promise<void> {
-  loginView.hidden = true;
-  dashboardView.hidden = false;
-  await loadRanking();
-  if (refreshTimer === null) {
-    refreshTimer = window.setInterval(loadRanking, 30_000);
-  }
-}
-
-loginForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  loginError.hidden = true;
-  const password = passwordInput.value;
-  try {
-    const res = await fetch("/api/dashboard-login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
-    });
-    const data = await res.json();
-    if (!res.ok || !data.ok) {
-      loginError.textContent = data.error ?? "認証に失敗しました。";
-      loginError.hidden = false;
-      return;
-    }
-    await showDashboard();
-  } catch {
-    loginError.textContent = "通信エラーが発生しました。";
-    loginError.hidden = false;
-  }
-});
+const myHandle = new URLSearchParams(location.search).get("me");
 
 refreshBtn.addEventListener("click", () => loadRanking());
 
 async function loadRanking(): Promise<void> {
   const res = await fetch("/api/ranking");
-  if (res.status === 401) {
-    loginView.hidden = false;
-    dashboardView.hidden = true;
-    return;
-  }
   const data = await res.json();
   if (!data.ok) return;
   renderRanking(data.ranking as RankingRow[]);
@@ -117,7 +71,7 @@ function renderPodium(top3: RankingRow[]): void {
   podiumEl.innerHTML = "";
   top3.forEach((row, index) => {
     const card = document.createElement("div");
-    card.className = `podium-card rank-${index + 1}`;
+    card.className = `podium-card rank-${index + 1}${row.handle_name === myHandle ? " is-me" : ""}`;
     card.innerHTML = `
       <span class="podium-medal">${MEDALS[index]}</span>
       <div class="podium-name">${escapeHtml(row.handle_name)}</div>
@@ -133,6 +87,9 @@ function renderTable(ranking: RankingRow[]): void {
   tbody.innerHTML = "";
   for (const row of ranking) {
     const tr = document.createElement("tr");
+    if (row.handle_name === myHandle) {
+      tr.className = "is-me";
+    }
     tr.innerHTML = `
       <td><span class="rank-badge">${row.rank}</span></td>
       <td>${escapeHtml(row.handle_name)}</td>
@@ -141,6 +98,14 @@ function renderTable(ranking: RankingRow[]): void {
     `;
     tr.addEventListener("click", () => openHistory(row.handle_name));
     tbody.appendChild(tr);
+  }
+
+  if (myHandle && !hasScrolledToMe) {
+    const myRow = tbody.querySelector("tr.is-me");
+    if (myRow) {
+      myRow.scrollIntoView({ behavior: "smooth", block: "center" });
+      hasScrolledToMe = true;
+    }
   }
 }
 
@@ -223,8 +188,6 @@ function escapeHtml(value: string): string {
 }
 
 (async function init() {
-  const authed = await checkSession();
-  if (authed) {
-    await showDashboard();
-  }
+  await loadRanking();
+  window.setInterval(loadRanking, 30_000);
 })();
