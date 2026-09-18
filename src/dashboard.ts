@@ -30,13 +30,20 @@ let chartInstance: Chart | null = null;
 let lastTopHandle: string | null = null;
 let hasScrolledToMe = false;
 
-// フォーム送信後の自動遷移直後は、スマホの「ゴーストクリック」
-// (前の画面でのタップが遷移後の同じ画面位置で誤発火する現象)を防ぐため、
-// ページ表示直後のクリックは無視する。
-const pageReadyAt = Date.now();
-const CLICK_GUARD_MS = 700;
-function isGhostClick(): boolean {
-  return Date.now() - pageReadyAt < CLICK_GUARD_MS;
+// フォーム送信後の自動遷移直後、前の画面でのタップの余韻が遷移後の
+// 同じ画面位置で「ゴーストクリック」として誤発火することがある。
+// ゴーストクリックはこのページ上でのpointerdown(実際に指/マウスが
+// 触れた操作)を伴わずにclickだけが発生するため、直前にpointerdownが
+// あったかどうかで本物のクリックかを判定する。
+function onRealClick(el: HTMLElement, handler: () => void): void {
+  let pointerDownAt = 0;
+  el.addEventListener("pointerdown", () => {
+    pointerDownAt = Date.now();
+  });
+  el.addEventListener("click", () => {
+    if (Date.now() - pointerDownAt > 1500) return;
+    handler();
+  });
 }
 
 const yen = new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY", maximumFractionDigits: 0 });
@@ -87,7 +94,7 @@ function renderPodium(top3: RankingRow[]): void {
       <div class="podium-assets">${yen.format(row.total_assets)}</div>
       <div class="podium-pl ${plClass(row.unrealized_pl)}">${formatPl(row.unrealized_pl)}</div>
     `;
-    card.addEventListener("click", () => openHistory(row.handle_name));
+    onRealClick(card, () => openHistory(row.handle_name));
     podiumEl.appendChild(card);
   });
 }
@@ -105,7 +112,7 @@ function renderTable(ranking: RankingRow[]): void {
       <td>${yen.format(row.total_assets)}</td>
       <td class="${plClass(row.unrealized_pl)}">${formatPl(row.unrealized_pl)}</td>
     `;
-    tr.addEventListener("click", () => openHistory(row.handle_name));
+    onRealClick(tr, () => openHistory(row.handle_name));
     tbody.appendChild(tr);
   }
 
@@ -119,8 +126,6 @@ function renderTable(ranking: RankingRow[]): void {
 }
 
 async function openHistory(handleName: string): Promise<void> {
-  if (isGhostClick()) return;
-
   const res = await fetch(`/api/history?handle=${encodeURIComponent(handleName)}`);
   const data = await res.json();
   if (!data.ok) return;
@@ -171,11 +176,16 @@ async function openHistory(handleName: string): Promise<void> {
   });
 }
 
-modalClose.addEventListener("click", () => {
+function closeModal(): void {
   modal.hidden = true;
-});
+}
+
+modalClose.addEventListener("click", closeModal);
 modal.addEventListener("click", (event) => {
-  if (event.target === modal) modal.hidden = true;
+  if (!(event.target as HTMLElement).closest(".modal-content")) closeModal();
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !modal.hidden) closeModal();
 });
 
 function launchConfetti(): void {
