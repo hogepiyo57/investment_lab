@@ -5,4 +5,4 @@ pages_build_output_dir = "dist"
 [[d1_databases]]
 binding = "DB"
 database_name = "investment_lab_db"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "c691f0ef-81a1-42d1-8e65-5024e5240e02"
