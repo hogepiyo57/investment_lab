@@ -395,6 +395,10 @@ body {
   z-index: 50;
 }
 
+.modal[hidden] {
+  display: none;
+}
+
 .modal-content {
   background: var(--bg-elevated);
   border: 1px solid var(--card-border);
