@@ -30,6 +30,15 @@ let chartInstance: Chart | null = null;
 let lastTopHandle: string | null = null;
 let hasScrolledToMe = false;
 
+// フォーム送信後の自動遷移直後は、スマホの「ゴーストクリック」
+// (前の画面でのタップが遷移後の同じ画面位置で誤発火する現象)を防ぐため、
+// ページ表示直後のクリックは無視する。
+const pageReadyAt = Date.now();
+const CLICK_GUARD_MS = 700;
+function isGhostClick(): boolean {
+  return Date.now() - pageReadyAt < CLICK_GUARD_MS;
+}
+
 const yen = new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY", maximumFractionDigits: 0 });
 
 function plClass(value: number | null): string {
@@ -110,6 +119,8 @@ function renderTable(ranking: RankingRow[]): void {
 }
 
 async function openHistory(handleName: string): Promise<void> {
+  if (isGhostClick()) return;
+
   const res = await fetch(`/api/history?handle=${encodeURIComponent(handleName)}`);
   const data = await res.json();
   if (!data.ok) return;
