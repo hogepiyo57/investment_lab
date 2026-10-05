@@ -1,5 +1,6 @@
-import { hashPin, verifyPin } from "../../shared/auth";
-import { createStudent, getStudent, getRanking, insertEntry } from "../../shared/db";
+import { hashPin, timingSafeEqual, verifyPin } from "../../shared/auth";
+import { createStudent, getRanking, getStudent, insertEntry, setPlainPin } from "../../shared/db";
+import { json, jsonError, readJson } from "../../shared/http";
 import { isValidAmount, isValidHandleName, isValidOptionalAmount, isValidPin } from "../../shared/validation";
 
 interface Env {
@@ -14,12 +15,8 @@ interface EntryBody {
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
-  let body: EntryBody;
-  try {
-    body = await context.request.json();
-  } catch {
-    return jsonError("リクエストの形式が正しくありません。", 400);
-  }
+  const body = await readJson<EntryBody>(context.request);
+  if (!body) return jsonError("リクエストの形式が正しくありません。", 400);
 
   const handleName = typeof body.handleName === "string" ? body.handleName.trim() : "";
   const { pin, totalAssets, unrealizedPl } = body;
@@ -42,35 +39,22 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const existing = await getStudent(db, handleName);
 
   if (existing) {
-    const pinOk = await verifyPin(handleName, pin as string, existing.pin_hash);
+    const pinOk = existing.pin
+      ? timingSafeEqual(pin, existing.pin)
+      : await verifyPin(handleName, pin, existing.pin_hash);
     if (!pinOk) {
       return jsonError("ハンドルネームまたはPINが違います。", 401);
     }
+    // PIN列追加前に登録した生徒は、正しいPINで報告した時点で平文を記録する
+    if (!existing.pin) await setPlainPin(db, handleName, pin);
   } else {
-    const pinHash = await hashPin(handleName, pin as string);
-    await createStudent(db, handleName, pinHash, now);
+    await createStudent(db, handleName, await hashPin(handleName, pin), pin, now);
   }
 
-  await insertEntry(
-    db,
-    handleName,
-    totalAssets as number,
-    (unrealizedPl as number | null | undefined) ?? null,
-    now
-  );
+  await insertEntry(db, handleName, totalAssets, unrealizedPl ?? null, now);
 
   const ranking = await getRanking(db);
   const myRank = ranking.find((r) => r.handle_name === handleName)?.rank ?? null;
 
-  return new Response(
-    JSON.stringify({ ok: true, isNewStudent: !existing, rank: myRank, totalStudents: ranking.length }),
-    { status: 200, headers: { "Content-Type": "application/json" } }
-  );
+  return json({ ok: true, isNewStudent: !existing, rank: myRank, totalStudents: ranking.length });
 };
-
-function jsonError(message: string, status: number): Response {
-  return new Response(JSON.stringify({ ok: false, error: message }), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
-}

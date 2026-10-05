@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>投資ラボ | 教師用管理</title>
+    <link rel="stylesheet" href="/src/style.css" />
+    <link rel="stylesheet" href="/src/admin.css" />
+  </head>
+  <body>
+    <section id="login-view" class="login-view" hidden>
+      <div class="login-card">
+        <p class="entry-eyebrow">投資ラボ 教師用</p>
+        <h1>管理ページ</h1>
+        <p class="entry-sub">管理者パスワードを入力してください。</p>
+        <form id="login-form" class="login-form">
+          <input type="password" id="admin-password" placeholder="管理者パスワード" autocomplete="current-password" required />
+          <button type="submit">ログイン</button>
+        </form>
+        <p id="login-error" class="error-text" hidden></p>
+      </div>
+    </section>
+
+    <div id="app-view" class="admin" hidden>
+      <header class="admin-header">
+        <div class="admin-title">
+          <p class="entry-eyebrow">投資ラボ 教師用</p>
+          <h1>管理ページ</h1>
+        </div>
+        <nav class="admin-tabs" role="tablist">
+          <button type="button" class="tab is-active" role="tab" data-tab="overview" aria-selected="true">概要</button>
+          <button type="button" class="tab" role="tab" data-tab="students" aria-selected="false">生徒管理</button>
+        </nav>
+        <div class="admin-actions">
+          <button type="button" id="reload-btn" class="ghost-btn">更新</button>
+          <button type="button" id="logout-btn" class="ghost-btn">ログアウト</button>
+        </div>
+      </header>
+
+      <p id="toast" class="toast" role="status" hidden></p>
+
+      <!-- 概要 -->
+      <section id="tab-overview" class="tab-panel">
+        <div id="kpi-grid" class="kpi-grid"></div>
+
+        <div class="panel-grid">
+          <article class="panel panel-wide">
+            <header class="panel-head">
+              <h2>クラス全体の総資産の推移</h2>
+              <p class="panel-note">各日の時点で、各生徒の最新の報告値から計算</p>
+            </header>
+            <div class="chart-box chart-box-tall"><canvas id="trend-chart" aria-label="クラス全体の総資産の推移"></canvas></div>
+          </article>
+
+          <article class="panel">
+            <header class="panel-head">
+              <h2>総資産の分布</h2>
+              <p class="panel-note">最新の報告値の人数</p>
+            </header>
+            <div class="chart-box"><canvas id="dist-chart" aria-label="総資産の分布"></canvas></div>
+          </article>
+
+          <article class="panel">
+            <header class="panel-head">
+              <h2>日別の報告人数</h2>
+              <p class="panel-note">その日に1回以上報告した生徒の数</p>
+            </header>
+            <div class="chart-box"><canvas id="reports-chart" aria-label="日別の報告人数"></canvas></div>
+          </article>
+
+          <article class="panel">
+            <header class="panel-head">
+              <h2>騰落率 上位5人</h2>
+              <p class="panel-note">初回報告からの総資産の増減率</p>
+            </header>
+            <table class="data-table"><tbody id="top-tbody"></tbody></table>
+          </article>
+
+          <article class="panel">
+            <header class="panel-head">
+              <h2>騰落率 下位5人</h2>
+              <p class="panel-note">初回報告からの総資産の増減率</p>
+            </header>
+            <table class="data-table"><tbody id="bottom-tbody"></tbody></table>
+          </article>
+
+          <article class="panel panel-wide">
+            <header class="panel-head">
+              <h2>今日まだ報告していない生徒</h2>
+              <p class="panel-note" id="unreported-note"></p>
+            </header>
+            <div id="unreported" class="chip-list"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- 生徒管理 -->
+      <section id="tab-students" class="tab-panel" hidden>
+        <div id="student-list-view">
+          <div class="toolbar">
+            <input type="search" id="student-search" class="input" placeholder="ハンドルネームで検索" />
+            <label class="toggle">
+              <input type="checkbox" id="show-pins" /> PINを表示
+            </label>
+            <form id="add-student-form" class="inline-form">
+              <input type="text" name="handleName" class="input" maxlength="20" placeholder="新しいハンドルネーム" required />
+              <input type="text" name="pin" class="input input-pin" inputmode="numeric" pattern="\d{4}" maxlength="4" placeholder="PIN(4桁)" required />
+              <button type="submit" class="primary-btn">生徒を追加</button>
+            </form>
+          </div>
+
+          <div class="panel table-panel">
+            <table class="data-table students-table">
+              <thead>
+                <tr>
+                  <th><button type="button" class="sort-btn" data-sort="handle_name">ハンドルネーム</button></th>
+                  <th>PIN</th>
+                  <th class="num"><button type="button" class="sort-btn" data-sort="latest">最新総資産</button></th>
+                  <th class="num"><button type="button" class="sort-btn" data-sort="pl">含み損益</button></th>
+                  <th class="num"><button type="button" class="sort-btn" data-sort="change">騰落率</button></th>
+                  <th class="num"><button type="button" class="sort-btn" data-sort="count">報告回数</button></th>
+                  <th><button type="button" class="sort-btn" data-sort="last">最終報告</button></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="students-tbody"></tbody>
+            </table>
+            <p id="students-empty" class="empty-text" hidden>生徒がまだ登録されていません。</p>
+          </div>
+        </div>
+
+        <div id="student-detail-view" hidden>
+          <button type="button" id="back-btn" class="ghost-btn">← 生徒一覧に戻る</button>
+          <h2 id="detail-title" class="detail-title"></h2>
+
+          <div class="detail-grid">
+            <article class="panel">
+              <header class="panel-head"><h2>ハンドルネーム・PIN</h2></header>
+              <form id="profile-form" class="stack-form">
+                <label class="field-label">ハンドルネーム
+                  <input type="text" name="newHandleName" class="input" maxlength="20" required />
+                </label>
+                <label class="field-label">PIN(4桁)
+                  <input type="text" name="pin" class="input" inputmode="numeric" pattern="\d{4}" maxlength="4" />
+                </label>
+                <p id="pin-unknown-note" class="panel-note" hidden>この生徒のPINはまだ記録されていません(次回の報告時に自動で記録されます)。ここで新しいPINを設定することもできます。</p>
+                <div class="form-actions">
+                  <button type="submit" class="primary-btn">保存</button>
+                  <button type="button" id="delete-student-btn" class="danger-btn">この生徒を削除</button>
+                </div>
+              </form>
+            </article>
+            <div id="detail-kpis" class="kpi-grid kpi-grid-compact"></div>
+          </div>
+
+          <article class="panel">
+            <header class="panel-head"><h2>総資産の推移</h2></header>
+            <div class="chart-box chart-box-tall"><canvas id="student-chart" aria-label="生徒の総資産の推移"></canvas></div>
+          </article>
+
+          <article class="panel">
+            <header class="panel-head">
+              <h2>報告の記録</h2>
+              <p class="panel-note">記録の追加・修正・削除ができます。修正はランキングにもすぐ反映されます。</p>
+            </header>
+            <form id="add-entry-form" class="inline-form">
+              <input type="datetime-local" name="createdAt" class="input" required />
+              <input type="number" name="totalAssets" class="input" placeholder="総資産(円)" required />
+              <input type="number" name="unrealizedPl" class="input" placeholder="含み損益(円・任意)" />
+              <button type="submit" class="primary-btn">記録を追加</button>
+            </form>
+            <table class="data-table entries-table">
+              <thead>
+                <tr>
+                  <th>日時</th>
+                  <th class="num">総資産</th>
+                  <th class="num">含み損益</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="entries-tbody"></tbody>
+            </table>
+            <p id="entries-empty" class="empty-text" hidden>まだ記録がありません。</p>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <script type="module" src="/src/admin.ts"></script>
+  </body>
+</html>

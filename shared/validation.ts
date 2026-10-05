@@ -13,3 +13,9 @@ export function isValidAmount(value: unknown): value is number {
 export function isValidOptionalAmount(value: unknown): value is number | null | undefined {
   return value === null || value === undefined || isValidAmount(value);
 }
+
+export function toIsoDate(value: unknown): string | null {
+  if (typeof value !== "string" || value === "") return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
