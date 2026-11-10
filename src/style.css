@@ -101,7 +101,97 @@ body {
   font-size: 12px;
 }
 
-#submit-btn {
+.entry-step-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.entry-step {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.entry-back {
+  padding: 6px 12px;
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.entry-back:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.entry-who {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  word-break: break-word;
+}
+
+.entry-note {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(91, 141, 255, 0.12);
+  border: 1px solid rgba(91, 141, 255, 0.4);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* 含み益・含み損: [種類] [金額] を1行に並べる */
+.pl-row {
+  display: flex;
+  gap: 8px;
+}
+
+.pl-row select,
+.pl-row input {
+  font-size: 16px;
+  font-weight: 400;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: var(--bg-elevated);
+  color: var(--text);
+}
+
+.pl-row select {
+  flex: 0 0 auto;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pl-row input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.pl-row select:focus,
+.pl-row input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.pl-row select.is-gain {
+  color: var(--green);
+  border-color: rgba(53, 214, 143, 0.6);
+}
+
+.pl-row select.is-loss {
+  color: var(--red);
+  border-color: rgba(255, 92, 122, 0.6);
+}
+
+.entry-btn {
   margin-top: 6px;
   padding: 14px;
   border: none;
@@ -114,16 +204,17 @@ body {
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
-#submit-btn:active {
+.entry-btn:active {
   transform: scale(0.98);
 }
 
-#submit-btn:disabled {
+.entry-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
 .result {
+  white-space: pre-line;
   margin-top: 20px;
   padding: 16px 18px;
   border-radius: var(--radius);

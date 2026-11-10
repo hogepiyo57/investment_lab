@@ -1,3 +1,5 @@
+import type { Student } from "./db";
+
 const encoder = new TextEncoder();
 
 function toHex(buffer: ArrayBuffer): string {
@@ -40,6 +42,11 @@ export async function verifyPin(
   storedHash: string
 ): Promise<boolean> {
   return timingSafeEqual(await hashPin(handleName, pin), storedHash);
+}
+
+// PIN列追加前に登録した生徒は平文PINがないため、ハッシュで照合する
+export async function studentPinMatches(student: Student, handleName: string, pin: string): Promise<boolean> {
+  return student.pin ? timingSafeEqual(pin, student.pin) : verifyPin(handleName, pin, student.pin_hash);
 }
 
 export async function passwordMatches(input: string, expected: string): Promise<boolean> {

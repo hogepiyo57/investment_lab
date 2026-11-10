@@ -14,7 +14,10 @@
         <p class="entry-sub">ハンドルネームとPINは初回登録時のものを毎回使ってね。</p>
       </header>
 
-      <form id="entry-form" class="entry-form" autocomplete="off">
+      <!-- 1画面目: ハンドルネームとPIN -->
+      <form id="login-form" class="entry-form" autocomplete="off">
+        <p class="entry-step">ステップ 1 / 2 ・ ハンドルネームとPIN</p>
+
         <label class="field">
           <span>ハンドルネーム</span>
           <input type="text" id="handleName" name="handleName" maxlength="20" required placeholder="例: たかし" />
@@ -32,26 +35,51 @@
             required
             placeholder="例: 1234"
           />
-          <small>初めての登録時に決めたPINを入力してください。</small>
+          <small>初めての人は、ここで決めたハンドルネームとPINで登録されます。</small>
         </label>
+
+        <button type="submit" id="login-btn" class="entry-btn">次へ</button>
+      </form>
+
+      <!-- 2画面目: 金額 -->
+      <form id="entry-form" class="entry-form" autocomplete="off" hidden>
+        <div class="entry-step-row">
+          <p class="entry-step">ステップ 2 / 2 ・ 金額</p>
+          <button type="button" id="back-btn" class="entry-back">← 戻る</button>
+        </div>
+
+        <p class="entry-who"><span id="who-name"></span> さん</p>
+        <p id="new-note" class="entry-note" hidden>
+          はじめての登録です。報告すると、このハンドルネームとPINで登録されます。PINは忘れないようにメモしておいてね。
+        </p>
 
         <label class="field">
           <span>総資産(円)</span>
-          <input type="number" id="totalAssets" name="totalAssets" required placeholder="例: 1050000" />
+          <input type="number" id="totalAssets" name="totalAssets" inputmode="numeric" required placeholder="例: 1050000" />
         </label>
 
-        <label class="field">
-          <span>含み益・含み損(円・任意)</span>
-          <input
-            type="number"
-            id="unrealizedPl"
-            name="unrealizedPl"
-            placeholder="例: 50000 / -20000"
-          />
-          <small>含み益はプラス、含み損はマイナスで入力してください。無ければ空欄でOK。</small>
-        </label>
+        <div class="field">
+          <span id="pl-label">含み益・含み損(円・任意)</span>
+          <div class="pl-row">
+            <select id="plType" name="plType" aria-labelledby="pl-label">
+              <option value="" selected>選ぶ</option>
+              <option value="gain">含み益</option>
+              <option value="loss">含み損</option>
+            </select>
+            <input
+              type="number"
+              id="plAmount"
+              name="plAmount"
+              min="0"
+              inputmode="numeric"
+              aria-labelledby="pl-label"
+              placeholder="例: 50000"
+            />
+          </div>
+          <small>含み益か含み損かを選んで、金額をそのまま入力してね。無ければ空欄でOK。</small>
+        </div>
 
-        <button type="submit" id="submit-btn">報告する</button>
+        <button type="submit" id="submit-btn" class="entry-btn">報告する</button>
       </form>
 
       <div id="result" class="result" hidden></div>

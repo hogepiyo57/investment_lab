@@ -1,4 +1,4 @@
-import { hashPin, timingSafeEqual, verifyPin } from "../../shared/auth";
+import { hashPin, studentPinMatches } from "../../shared/auth";
 import { createStudent, getRanking, getStudent, insertEntry, setPlainPin } from "../../shared/db";
 import { json, jsonError, readJson } from "../../shared/http";
 import { isValidAmount, isValidHandleName, isValidOptionalAmount, isValidPin } from "../../shared/validation";
@@ -39,10 +39,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const existing = await getStudent(db, handleName);
 
   if (existing) {
-    const pinOk = existing.pin
-      ? timingSafeEqual(pin, existing.pin)
-      : await verifyPin(handleName, pin, existing.pin_hash);
-    if (!pinOk) {
+    if (!(await studentPinMatches(existing, handleName, pin))) {
       return jsonError("ハンドルネームまたはPINが違います。", 401);
     }
     // PIN列追加前に登録した生徒は、正しいPINで報告した時点で平文を記録する
